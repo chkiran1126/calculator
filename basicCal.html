@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Calculator</title>
+    <style>
+      .main {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin-top: 50px;
+      }
+      .first {
+        display: flex;
+        flex-direction: column;
+        background-color: #2e2e2e;
+        border-radius: 40px;
+        padding: 16px;
+        width: 570px;
+        height: auto;
+      }
+      .input {
+        display: flex;
+        border-radius: 24px;
+        border: 1px solid #fff;
+        height: 100px;
+        overflow-y: auto;
+        background-color: #fff;
+        padding: 10px;
+      }
+      .arth {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        width: 100%;
+        padding-top: 16px;
+        padding-bottom: 16px;
+      }
+      .firstrow,
+      .second {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        column-gap: 56px;
+        row-gap: 8px;
+      }
+      .firstrow {
+        gap: unset;
+      }
+      .action-button {
+        height: 60px;
+        width: 60px;
+        border-radius: 12px;
+        background-color: white;
+        font-size: 24px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: none;
+        outline: 0;
+        cursor: pointer;
+      }
+      .action-button:hover {
+        background-color: #ddd;
+      }
+      input {
+        width: 100%;
+        border: none;
+        outline: 0;
+        font-size: 24px;
+        text-align: right;
+        background: transparent;
+      }
+      .error{
+        display: none;
+        width: auto;
+        color: rgb(212, 21, 21);
+        font-size: 16px;
+        font-weight: 500;
+        text-align: center;
+        padding: 24px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main">
+      <h3>BASIC CALCULATOR</h3>
+      <div class="error"></div>
+      <div class="first">
+        <div class="input">
+          <input type="text" id="calculator-display" placeholder="0"  />
+        </div>
+        <div class="arth">
+          <div class="firstrow">
+            <button class="action-button" onclick="appendValue('+')">+</button>
+            <button class="action-button" onclick="appendValue('-')">-</button>
+            <button class="action-button" onclick="appendValue('*')">×</button>
+            <button class="action-button" onclick="appendValue('/')">÷</button>
+            <button class="action-button" onclick="clearDisplay()">AC</button>
+            <button class="action-button" onclick="calculate()">=</button>
+          </div>
+          <div class="second">
+            <button class="action-button" onclick="appendValue('1')">1</button>
+            <button class="action-button" onclick="appendValue('2')">2</button>
+            <button class="action-button" onclick="appendValue('3')">3</button>
+            <button class="action-button" onclick="appendValue('4')">4</button>
+            <button class="action-button" onclick="appendValue('5')">5</button>
+            <button class="action-button" onclick="appendValue('6')">6</button>
+            <button class="action-button" onclick="appendValue('7')">7</button>
+            <button class="action-button" onclick="appendValue('8')">8</button>
+            <button class="action-button" onclick="appendValue('9')">9</button>
+            <button class="action-button" onclick="appendValue('0')">0</button>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+
+    <script>
+     const display = document.getElementById('calculator-display');
+
+// Append values to the display
+function appendValue(value) {
+  const cursorPos = display.selectionStart;
+  const textBeforeCursor = display.value.substring(0, cursorPos);
+  const textAfterCursor = display.value.substring(cursorPos);
+  display.value = textBeforeCursor + value + textAfterCursor;
+  setCaretPosition(cursorPos + 1); // Move cursor after the new value
+}
+
+// Clear the display
+function clearDisplay() {
+  display.value = '';
+}
+
+function calculate() {
+  const errorBox = document.getElementsByClassName('error')[0]; // Select the error box
+  try {
+    const result = eval(display.value); // Evaluate the expression
+    if (isNaN(result) || !isFinite(result)) {
+      throw new Error("Invalid calculation"); // Handle division by zero or other invalid cases
+    }
+    display.value = result; // Update the display
+    errorBox.style.display = 'none'; // Hide the error message
+  } catch (e) {
+    errorBox.style.display = 'block'; // Show the error message
+    errorBox.textContent = 'Error: Invalid expression!'; // Set the error text
+  }
+}
+
+
+// Set caret (cursor) position in the input field
+function setCaretPosition(pos) {
+  display.setSelectionRange(pos, pos);
+  display.focus();
+}
+
+// Handle backspace for deleting one character
+function handleBackspace() {
+  const cursorPos = display.selectionStart;
+  if (cursorPos > 0) {
+    const textBeforeCursor = display.value.substring(0, cursorPos - 1);
+    const textAfterCursor = display.value.substring(cursorPos);
+    display.value = textBeforeCursor + textAfterCursor;
+    setCaretPosition(cursorPos - 1); // Move cursor back by one position
+  }
+}
+
+// Handle keyboard input
+document.addEventListener('keydown', (event) => {
+  const validKeys = '0123456789+-*/.';
+  const key = event.key;
+
+  if (validKeys.includes(key)) {
+    event.preventDefault(); // Prevent default input behavior
+    appendValue(key); // Append valid key
+  } else if (key === 'Enter') {
+    event.preventDefault(); // Prevent form submission behavior
+    calculate(); // Calculate on Enter key
+  } else if (key === 'Backspace') {
+    event.preventDefault(); // Prevent default backspace behavior
+    handleBackspace(); // Remove last character
+  } else if (key === 'Escape') {
+    event.preventDefault(); // Prevent any unintended behavior
+    clearDisplay(); // Clear display on Escape key
+  }
+});
+
+    </script>
+  </body>
+</html>
